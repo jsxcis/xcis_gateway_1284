@@ -1,6 +1,7 @@
 // Beta Version 14/12/2020
 
 #include <XcisSensor.h>
+#include <XcisMessage.h>
 #include <RHRouter.h>
 #include <RHMesh.h>
 #include <RH_RF95.h>
@@ -9,7 +10,22 @@
 #include <SoftwareSerial.h>
 #include "EEPROMAnything.h"
 
-uint8_t nodeId = 98; // Gateway LoraID
+const char compile_date[] = __DATE__ " " __TIME__;
+
+uint8_t nodeId = 0x98; // Gateway LoraID
+uint8_t locationID = 0x01; // Location ID of this gateway
+
+#pragma pack(push, 1)
+typedef struct
+{
+    uint8_t farmID;
+    uint8_t sensorType;
+    uint8_t command;
+    uint8_t payload[28];
+    uint8_t crc;
+} message, *pmessage;
+
+#pragma pack(pop)
 
 #include <EEPROM.h>
 
@@ -22,6 +38,9 @@ String board = "__AVR_ATmega1284P__";
 
 
 #define XCIS_RH_MESH_MAX_MESSAGE_LEN 32
+//uint8_t paydata[28] = {0x4a, 0x4f, 0x4e, 0x41, 0x54, 0x48, 0x41, 0x4e, 0x20, 0x45, 0x44, 0x47, 0x41, 0x52, 0x20, 0x53, 0x48, 0x41, 0x52, 0x50, 0x20, 0x30, 0x33, 0x30, 0x33, 0x36, 0x37, 0x41};
+uint8_t paydata[28] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+uint8_t data[XCIS_RH_MESH_MAX_MESSAGE_LEN];
 
 #define RH_HAVE_SERIAL
 
@@ -65,6 +84,7 @@ bool delayOnlineCheck = false;
 unsigned long CHECK_ONLINE_TIME = 60000; // 1 * 60000msec
 
 XcisSensor sensors;
+XcisMessage xcisMessage;
 
 struct sensor
 {
@@ -89,6 +109,9 @@ String meshCommand = "";
 String loraID ="";
 String deviceType = "";
 
+char rx_byte = 0;
+String rx_str = "";
+SoftwareSerial mySerial(10, 11); // RX, TX
 
 //=======================================================================
 void checkOnline()
@@ -101,22 +124,32 @@ void checkOnline()
 //String response = "NULL";
 void scanSensors()
 {
-  Serial.println("Scan sensor:");
+    Serial.println("scanSensors");
     int sensorToScan = sensors.scanNextSensor();
     if (sensorToScan != -1)
     {
-      String req = sensors.getSensorLoraID(sensorToScan) + ":REQUEST:D25:EOM";
-      Serial.print("Scan sensor:");
-      Serial.println(req);
-      //digitalWrite(UPLINK, LOW);//ON
-      processCommand(req);
-     // digitalWrite(UPLINK, HIGH);//OFF
+      String ver = sensors.getSensorVersion(sensorToScan);
+      if (ver == "3.0")
+      {
+        Serial.println("Using new protocol");
+        String loraID = sensors.getSensorLoraID(sensorToScan);
+        String deviceType = sensors.getSensorDeviceType(sensorToScan);
+        Serial.print("Scan sensor:");
+        Serial.print(loraID + ",");
+        Serial.print(deviceType + ",");
+        Serial.println(ver);
+        processToMesh(loraID,deviceType);
+      }
+      else
+      {
+        String req = sensors.getSensorLoraID(sensorToScan) + ":REQUEST:D25:EOM";
+        Serial.print("Scan sensor:");
+        Serial.print(req + ",");
+        Serial.println(ver);
+        processCommand(req);
+      }
     }
-  //digitalWrite(UPLINK, LOW);//ON
 }
-char rx_byte = 0;
-String rx_str = "";
-SoftwareSerial mySerial(10, 11); // RX, TX
 void setup()
 {
     pinMode(RESET_SW,INPUT); // A3 Reset Switch
@@ -139,7 +172,8 @@ void setup()
     Serial.begin(9600);
    
     mySerial.begin(9600);
-
+    Serial.print("XCIS MESH GW Compiled on:");
+    Serial.println(compile_date);
     //setDefaultScanlist();
     //readConfiguration();
  
@@ -160,14 +194,6 @@ void setup()
     Wire.onRequest(requestEvent);
     Wire.onReceive(receiveEvent);
 
-    //setScanListLength(3); // Number of nodes to scan
-    //int numberActiveSensors = 0;
-   // numberActiveSensors = getScanListLength();
-    //Serial.println();
-    //Serial.print("Scan list length is:");
-    //Serial.println(numberActiveSensors);
-    //initaliseScanList(numberActiveSensors);
-    //sensors.listSensors(true);
     
     Serial.println("RHMesh LoRa Gateway init succeeded.");
     Serial.println("Ready");
@@ -179,6 +205,19 @@ void setup()
     scan = false;
     scanListStored = false;
     wdt_enable(WDTO_8S);
+
+    //test code
+  
+   
+    //uint8_t recvdata[32] = {0x22,0x23,0x24,0x4a, 0x4f, 0x4e, 0x41, 0x54, 0x48, 0x41, 0x4e, 0x20, 0x45, 0x44, 0xFF, 0x41, 0xFF, 0x20, 0xFF, 0x48, 0x41, 0x52, 0x50, 0x20, 0x30, 0x33, 0x30, 0x33, 0x36, 0x37, 0x41 ,0xFF};   
+    //xcisMessage.processMessage(recvdata);
+    //Serial.println(xcisMessage.getLocationID(),HEX);
+    //Serial.println(xcisMessage.getDeviceType(),HEX);
+    //Serial.println(xcisMessage.getCommand(),HEX);
+    //uint8_t recvPayload[28];
+    //xcisMessage.getPayload(recvPayload);
+    //xcisMessage.dumpHex(recvPayload,28);
+    // end test code
 }
 void loop()
 {
@@ -280,7 +319,7 @@ void requestEvent() {
   }
   //String response = sensors.getSensorData(loraID) + ",Status=" + sensors.getDeviceMode(loraID) + ",";
   String responseBrief = sensors.getSensorDataBrief(loraID,deviceType) + sensors.getDeviceMode(loraID) + ",";
-  //Serial.println(responseBrief);
+  Serial.println(responseBrief);
   Wire.write(responseBrief.c_str());
 }
 void receiveEvent(int howMany)
