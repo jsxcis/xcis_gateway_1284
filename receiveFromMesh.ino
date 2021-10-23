@@ -18,7 +18,7 @@ String receiveFromMesh()
         Serial.print(":");
         Serial.print(xcisMessage.getDeviceType(),HEX);
         Serial.print(":");
-        Serial.print(xcisMessage.getCommand(),HEX);
+        Serial.println(xcisMessage.getCommand(),HEX);
         switch(xcisMessage.getDeviceType())
         {
           case RAIN_GAUGE:
@@ -49,10 +49,44 @@ String receiveFromMesh()
             float batVoltage = (float) pcm.battery/100.00;
             Serial.println(pcm.value);
             Serial.println(pcm.timestamp);
+            Serial.println(from);
             response = "ID=" + convertLoraID(from) + ",B=" + String(batVoltage) + ",V=" + String(pcm.value) + ",T=" + String(pcm.timestamp)  + ",";
             Serial.println(response);
             break;
           }
+          case TROUGH:
+          {
+            Serial.println("TROUGH");
+            //uint8_t recvPayload[28];
+            //xcisMessage.getPayload(recvPayload);
+            //xcisMessage.dumpHex(recvPayload,28);
+            distance dist;
+            xcisMessage.processDistancePayload(dist);
+            Serial.println(dist.battery); // Need to div by 100.
+            float batVoltage = (float) dist.battery/100.00;
+            Serial.println(dist.value);
+            Serial.println(from);
+            response = "ID=" + convertLoraID(from) + ",B=" + String(batVoltage) + ",V=" + String(dist.value) + ",";
+            Serial.println(response);
+            break;
+          }
+          case TANK:
+          {
+            Serial.println("TANK");
+            //uint8_t recvPayload[28];
+            //xcisMessage.getPayload(recvPayload);
+            //xcisMessage.dumpHex(recvPayload,28);
+            distance dist;
+            xcisMessage.processDistancePayload(dist);
+            Serial.println(dist.battery); // Need to div by 100.
+            float batVoltage = (float) dist.battery/100.00;
+            Serial.println(dist.value);
+            Serial.println(from);
+            response = "ID=" + convertLoraID(from) + ",B=" + String(batVoltage) + ",V=" + String(dist.value) + ",";
+            Serial.println(response);
+            break;
+          }
+          
           default:
             Serial.println("UNKNOWN PAYLOAD"); 
         }
@@ -64,20 +98,22 @@ String receiveFromMesh()
         response = String((char*)buf); 
     }
   }
- // Serial.println(response);
   return response;
 }
 // Conversion function to a two digtial number as the main server expects an 2 digit format loraID
 String convertLoraID(uint8_t from)
 {
-  String loraId = "";
+  char buf[10];
+  String lid = "";
   if (from < 10)
   {
-    loraId = "0" + String(from);
+    sprintf(buf,"0%u",from);
+    lid = (char*)buf;
   }
   else
   {
-    loraId = String(from);
+    sprintf(buf,"%u",from);  
+    lid = (char*)buf;
   }
-  return loraID;
+  return lid;
 }

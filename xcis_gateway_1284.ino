@@ -319,7 +319,7 @@ void requestEvent() {
   }
   //String response = sensors.getSensorData(loraID) + ",Status=" + sensors.getDeviceMode(loraID) + ",";
   String responseBrief = sensors.getSensorDataBrief(loraID,deviceType) + sensors.getDeviceMode(loraID) + ",";
-  Serial.println(responseBrief);
+  //Serial.println(responseBrief);
   Wire.write(responseBrief.c_str());
 }
 void receiveEvent(int howMany)

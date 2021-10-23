@@ -1,7 +1,7 @@
 void processMessage()
 {
   // check for data request
-  Serial.println(command);
+  //Serial.println(command);
   String instruction = getValue(command,"getdata");
   String device = getValue(command,"d");
   String scanNumber = getValue(command,"s");
