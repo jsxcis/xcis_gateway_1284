@@ -86,7 +86,22 @@ String receiveFromMesh()
             Serial.println(response);
             break;
           }
-          
+          case FENCE:
+          {
+            Serial.println("FENCE");
+            //uint8_t recvPayload[28];
+            //xcisMessage.getPayload(recvPayload);
+            //xcisMessage.dumpHex(recvPayload,28);
+            voltage volts;
+            xcisMessage.processVoltagePayload(volts);
+            Serial.println(volts.battery); // Need to div by 100.
+            float batVoltage = (float) volts.battery/100.00;
+            Serial.println(volts.value);
+            Serial.println(from);
+            response = "ID=" + convertLoraID(from) + ",B=" + String(batVoltage) + ",V=" + String(volts.value) + ",";
+            Serial.println(response);
+            break;
+          }
           default:
             Serial.println("UNKNOWN PAYLOAD"); 
         }

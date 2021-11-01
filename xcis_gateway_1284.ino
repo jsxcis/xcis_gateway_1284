@@ -58,6 +58,8 @@ unsigned long scanLoopCount = 0;
 unsigned long checkOnlineLoopCount = 0;
 unsigned long checkI2CCount = 0;
 unsigned long heartBeat = 0;
+unsigned long broadcastLoopCount = 0;
+
 bool heartBeatOn = false;
 String command; // Command from the PI
 bool scan = false;
@@ -258,7 +260,8 @@ void loop()
       checkOnline();
     }
   }
-  heartBeat++;
+  checkOnlineLoopCount++;
+  
   if (heartBeat == 1500) // MAXINT is 4294967295
   {
     heartBeat = 0;
@@ -273,8 +276,16 @@ void loop()
        heartBeatOn = false;
     }
   }
+  heartBeat++;
   
-  checkOnlineLoopCount++;
+  if (broadcastLoopCount == 12000) // MAXINT is 4294967295
+  {
+    broadcastLoopCount = 0;
+   
+   sendMeshBroadcast();
+  }
+  broadcastLoopCount++;
+  
   processResponse(receiveFromMesh());
   checkI2CCount++;
   if (checkI2CCount == 100000)

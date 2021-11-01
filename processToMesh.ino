@@ -18,6 +18,16 @@ void processToMesh(String loraID, String deviceType)
     xcisMessage.createMessage(data,locationID, FLOW_METER, SENSOR_DATA_REQUEST);
     xcisMessage.dumpHex(data,sizeof(data));
   }
+  else if (deviceType = "Tank")
+  {
+    xcisMessage.createMessage(data,locationID, TANK, SENSOR_DATA_REQUEST);
+    xcisMessage.dumpHex(data,sizeof(data));
+  }
+  else if (deviceType = "TROUGH")
+  {
+    xcisMessage.createMessage(data,locationID, TROUGH, SENSOR_DATA_REQUEST);
+    xcisMessage.dumpHex(data,sizeof(data));
+  }
   else
   {
     Serial.println("Unknown device type");
@@ -36,6 +46,6 @@ void processToMesh(String loraID, String deviceType)
     // Status update for send error
     
   }
-  Serial.println("sendToMesh():done");
+  Serial.println("processToMesh():done");
   digitalWrite(LORA,0);
 }
