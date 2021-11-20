@@ -1,7 +1,8 @@
 void processMessage()
 {
   // check for data request
-  //Serial.println(command);
+  Serial.print("processMessage():");
+  Serial.println(command);
   String instruction = getValue(command,"getdata");
   String device = getValue(command,"d");
   String scanNumber = getValue(command,"s");
@@ -33,6 +34,6 @@ void processMessage()
     Serial.print(device + ",");
     Serial.print(lid + ",");
     Serial.println(ver);
-   sensors.addSensor(scanNumber.toInt(),lid,device,ver);  
+   sensors.addSensor(scanNumber.toInt(),lid,device,ver,"true");  
   }
 }

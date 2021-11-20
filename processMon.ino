@@ -8,7 +8,7 @@ void processMon(String command)
     Serial.println("Displaying Routing Table");
    manager->printRoutingTable();
   }
-  if (command == "lss")
+  if (command == "ls")
   {
     Serial.println("Sensor List");
     Serial.println(sensors.listSensors(true));
@@ -17,6 +17,12 @@ void processMon(String command)
   {
     Serial.println("Resetting...");
     restart();
+  }
+  if (command == "bc")
+  {
+    Serial.println("Sending broadcast");
+     sendMeshBroadcast();
+    
   }
   // check for data request
   String instruction = getValue(command,"getdata");

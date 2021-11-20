@@ -8,6 +8,6 @@ void initaliseScanList(int scanListLength)
     Serial.print(configuration.scanList[i].loraID);
     Serial.print(",");
     Serial.println(configuration.scanList[i].deviceType);
-    sensors.addSensor(i, configuration.scanList[i].loraID, configuration.scanList[i].deviceType);
+    sensors.addSensor(i, configuration.scanList[i].loraID, configuration.scanList[i].deviceType,"true");
   }
 }

@@ -1,6 +1,7 @@
 void sendMeshBroadcast()
 {
- 
+   byte destination = 0xFE;
+
   Serial.print("sendMesgBroadcast():");
   digitalWrite(LORA,1);
   xcisMessage.createCommandPayload(STATUS_REQUEST,nodeId );
@@ -9,7 +10,7 @@ void sendMeshBroadcast()
   xcisMessage.createMessage(data,locationID, GATEWAY, STATUS_REQUEST);
   xcisMessage.dumpHex(data,sizeof(data));
   
-  if (manager->sendtoWait(data, sizeof(data), RH_BROADCAST_ADDRESS) == RH_ROUTER_ERROR_NONE)
+  if (manager->sendtoWait(data, sizeof(data), /*RH_BROADCAST_ADDRESS*/ destination) == RH_ROUTER_ERROR_NONE) // Temporary send to 0xFE - new sensor default address
   {
     // Status update for successful send
    

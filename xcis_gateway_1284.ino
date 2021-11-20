@@ -242,7 +242,7 @@ void loop()
     }
   } // end: if (Serial.available() > 0)
   
-  if (scanLoopCount == 10000)
+  if (scanLoopCount == 100000)
   {
     scanLoopCount = 0;
     if (scanListStored == true)
@@ -278,13 +278,13 @@ void loop()
   }
   heartBeat++;
   
-  if (broadcastLoopCount == 12000) // MAXINT is 4294967295
-  {
-    broadcastLoopCount = 0;
+  //if (broadcastLoopCount == 40000) // MAXINT is 4294967295
+  //{
+  //  broadcastLoopCount = 0;
    
-   sendMeshBroadcast();
-  }
-  broadcastLoopCount++;
+   //sendMeshBroadcast();
+  //}
+  //broadcastLoopCount++;
   
   processResponse(receiveFromMesh());
   checkI2CCount++;
@@ -329,8 +329,8 @@ void requestEvent() {
     return;
   }
   //String response = sensors.getSensorData(loraID) + ",Status=" + sensors.getDeviceMode(loraID) + ",";
-  String responseBrief = sensors.getSensorDataBrief(loraID,deviceType) + sensors.getDeviceMode(loraID) + ",";
-  //Serial.println(responseBrief);
+  String responseBrief = sensors.getSensorDataBrief(loraID) + sensors.getDeviceMode(loraID) + ",";
+  Serial.println(responseBrief);
   Wire.write(responseBrief.c_str());
 }
 void receiveEvent(int howMany)
