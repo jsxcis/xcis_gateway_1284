@@ -329,7 +329,23 @@ void requestEvent() {
     return;
   }
   //String response = sensors.getSensorData(loraID) + ",Status=" + sensors.getDeviceMode(loraID) + ",";
-  String responseBrief = sensors.getSensorDataBrief(loraID) + sensors.getDeviceMode(loraID) + ",";
+  String sensorVersion = sensors.getSensorVersion(sensors.getSensorScanNumber(loraID));
+  
+  Serial.print("Sensor Version:");
+  Serial.println(sensorVersion);
+  String responseBrief = "";
+  if (sensorVersion == "2.0")
+  {
+    responseBrief = sensors.getSensorDataBrief_v2(loraID) + sensors.getDeviceMode(loraID) + ",";
+  }
+  else if (sensorVersion == "3.0")
+  {
+    responseBrief = sensors.getSensorDataBrief_v3(loraID) + sensors.getDeviceMode(loraID) + ",";
+  }
+  else
+  {
+    return;
+  }
   Serial.println(responseBrief);
   Wire.write(responseBrief.c_str());
 }

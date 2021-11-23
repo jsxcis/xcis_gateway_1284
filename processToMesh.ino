@@ -13,19 +13,24 @@ void processToMesh(String loraID, String deviceType)
     xcisMessage.createMessage(data,locationID, RAIN_GAUGE, SENSOR_DATA_REQUEST);
     xcisMessage.dumpHex(data,sizeof(data));
   }
-  else if (deviceType = "FlowMeter")
+  else if (deviceType == "FlowMeter")
   {
     xcisMessage.createMessage(data,locationID, FLOW_METER, SENSOR_DATA_REQUEST);
     xcisMessage.dumpHex(data,sizeof(data));
   }
-  else if (deviceType = "Tank")
+  else if (deviceType == "Tank")
   {
     xcisMessage.createMessage(data,locationID, TANK, SENSOR_DATA_REQUEST);
     xcisMessage.dumpHex(data,sizeof(data));
   }
-  else if (deviceType = "TROUGH")
+  else if (deviceType == "Trough")
   {
     xcisMessage.createMessage(data,locationID, TROUGH, SENSOR_DATA_REQUEST);
+    xcisMessage.dumpHex(data,sizeof(data));
+  }
+  else if (deviceType == "Fence")
+  {
+    xcisMessage.createMessage(data,locationID, FENCE, SENSOR_DATA_REQUEST);
     xcisMessage.dumpHex(data,sizeof(data));
   }
   else

@@ -39,7 +39,7 @@ String receiveFromMesh()
             float batVoltage = (float) pcm.battery/100.00;
             Serial.println(pcm.value);
             Serial.println(pcm.timestamp);
-            response = "ID=" +inbound_loraID + ",B=" + String(batVoltage) + ",V=" + String(pcm.value) + ",T=" + String(pcm.timestamp)  + ",";
+            response = "ID=" +inbound_loraID +  ",V=" + String(pcm.value) + ",T=" + String(pcm.timestamp) + ",B=" + String(batVoltage) + ",";
             Serial.println(response);
             break;
           }
@@ -56,8 +56,7 @@ String receiveFromMesh()
             Serial.println(pcm.value);
             Serial.println(pcm.timestamp);
             Serial.println(from);
-            response = "ID=" + inbound_loraID
-            + ",B=" + String(batVoltage) + ",V=" + String(pcm.value) + ",T=" + String(pcm.timestamp)  + ",";
+            response = "ID=" + inbound_loraID +  ",V=" + String(pcm.value) + ",T=" + String(pcm.timestamp)  + ",B=" + String(batVoltage) + ",";
             Serial.println(response);
             break;
           }
@@ -73,7 +72,7 @@ String receiveFromMesh()
             float batVoltage = (float) dist.battery/100.00;
             Serial.println(dist.value);
             Serial.println(from);
-            response = "ID=" + inbound_loraID + ",B=" + String(batVoltage) + ",V=" + String(dist.value) + ",";
+            response = "ID=" + inbound_loraID  + ",V=" + String(dist.value) + ",B=" + String(batVoltage)+ ",";
             Serial.println(response);
             break;
           }
@@ -89,7 +88,7 @@ String receiveFromMesh()
             float batVoltage = (float) dist.battery/100.00;
             Serial.println(dist.value);
             Serial.println(from);
-            response = "ID=" + inbound_loraID + ",B=" + String(batVoltage) + ",V=" + String(dist.value) + ",";
+            response = "ID=" + inbound_loraID + ",V=" + String(dist.value) +  ",B=" + String(batVoltage) + ",";
             Serial.println(response);
             break;
           }
@@ -105,7 +104,7 @@ String receiveFromMesh()
             float batVoltage = (float) volts.battery/100.00;
             Serial.println(volts.value);
             Serial.println(from);
-            response = "ID=" + inbound_loraID + ",B=" + String(batVoltage) + ",V=" + String(volts.value) + ",";
+            response = "ID=" + inbound_loraID + ",V=" + String(volts.value)   + ",B=" + String(batVoltage)+ ",";
             Serial.println(response);
             break;
           }
