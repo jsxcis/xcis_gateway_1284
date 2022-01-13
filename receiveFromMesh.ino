@@ -11,7 +11,8 @@ String receiveFromMesh()
     Serial.print(from,HEX);
     Serial.print(",0x");
     sprintf(dt,"%02X",from);
-    inbound_loraID = String(dt);
+    //inbound_loraID = String(dt);
+    inbound_loraID = convertLoraID(from);
     
     xcisMessage.dumpHex(buf,sizeof(buf));
     
@@ -38,8 +39,8 @@ String receiveFromMesh()
             Serial.println(pcm.battery); // Need to div by 100.
             float batVoltage = (float) pcm.battery/100.00;
             Serial.println(pcm.value);
-            Serial.println(pcm.timestamp);
-            response = "ID=" +inbound_loraID +  ",V=" + String(pcm.value) + ",T=" + String(pcm.timestamp) + ",B=" + String(batVoltage) + ",";
+            Serial.println(pcm.accumulatedDataToken);
+            response = "ID=" +inbound_loraID +  ",V=" + String(pcm.value) + ",T=" + String(pcm.accumulatedDataToken) + ",B=" + String(batVoltage) + ",";
             Serial.println(response);
             break;
           }
@@ -54,9 +55,9 @@ String receiveFromMesh()
             Serial.println(pcm.battery); // Need to div by 100.
             float batVoltage = (float) pcm.battery/100.00;
             Serial.println(pcm.value);
-            Serial.println(pcm.timestamp);
+            Serial.println(pcm.accumulatedDataToken);
             Serial.println(from);
-            response = "ID=" + inbound_loraID +  ",V=" + String(pcm.value) + ",T=" + String(pcm.timestamp)  + ",B=" + String(batVoltage) + ",";
+            response = "ID=" + inbound_loraID +  ",V=" + String(pcm.value) + ",T=" + String(pcm.accumulatedDataToken)  + ",B=" + String(batVoltage) + ",";
             Serial.println(response);
             break;
           }
@@ -105,6 +106,29 @@ String receiveFromMesh()
             Serial.println(volts.value);
             Serial.println(from);
             response = "ID=" + inbound_loraID + ",V=" + String(volts.value)   + ",B=" + String(batVoltage)+ ",";
+            Serial.println(response);
+            break;
+          }
+          case BORE_CONTROLLER:
+          {
+            Serial.println("BORE_CONTROLLER");
+            uint8_t recvPayload[28];
+            xcisMessage.getPayload(recvPayload);
+            xcisMessage.dumpHex(recvPayload,28);
+            boreStatus status;
+            xcisMessage.processBorePayload(status);
+            Serial.println(status.battery); // Need to div by 100.
+            float batVoltage = (float) status.battery/100.00;
+            Serial.println(status.currentValue);
+            Serial.println(status.boreState);
+            Serial.println(status.accumulatedPulses);
+            Serial.println(status.accumulatedDataToken);
+            Serial.println(from);
+            response = "ID=" + inbound_loraID + ",V=" + String(status.currentValue) + 
+                        ",P=" + String(status.accumulatedPulses)+
+                        ",T=" + String(status.accumulatedDataToken)+
+                         ",S=" + String(status.boreState)  +
+                         ",B=" + String(batVoltage)+ ",";
             Serial.println(response);
             break;
           }
@@ -164,7 +188,7 @@ String receiveFromMesh()
   }
   return response;
 }
-// Conversion function to a two digtial number as the main server expects an 2 digit format loraID
+// Conversion function to a two digtial number as the main server expects a 2 digit format loraID
 String convertLoraID(uint8_t from)
 {
   char buf[10];

@@ -12,7 +12,7 @@
 
 const char compile_date[] = __DATE__ " " __TIME__;
 
-uint8_t nodeId = 0x98; // Gateway LoraID
+uint8_t nodeId = 0x95; // Gateway LoraID
 uint8_t locationID = 0x01; // Location ID of this gateway
 
 #pragma pack(push, 1)
@@ -84,6 +84,7 @@ unsigned long DELAY_TIME = 5000; // Scan Rate
 unsigned long delayOnlineCheckStart = 0; // the time the delay started
 bool delayOnlineCheck = false;
 unsigned long CHECK_ONLINE_TIME = 60000; // 1 * 60000msec
+bool controlOutboundFlag = false;
 
 XcisSensor sensors;
 XcisMessage xcisMessage;
@@ -107,9 +108,13 @@ struct scanlist_t
     int scanListLength;
 } scanlist;
 
+// For global controls and data requests
 String meshCommand = "";
 String loraID ="";
 String deviceType = "";
+String controlAction = "";
+String pulseDuration = "2000"; // Default value
+uint16_t pulseDuration_int = 2000;
 
 char rx_byte = 0;
 String rx_str = "";
@@ -126,14 +131,14 @@ void checkOnline()
 //String response = "NULL";
 void scanSensors()
 {
-    Serial.println("scanSensors");
+    //Serial.println("scanSensors");
     int sensorToScan = sensors.scanNextSensor();
     if (sensorToScan != -1)
     {
       String ver = sensors.getSensorVersion(sensorToScan);
       if (ver == "3.0")
       {
-        Serial.println("Using new protocol");
+        //Serial.println("Using new protocol");
         String loraID = sensors.getSensorLoraID(sensorToScan);
         String deviceType = sensors.getSensorDeviceType(sensorToScan);
         Serial.print("Scan sensor:");
@@ -242,7 +247,7 @@ void loop()
     }
   } // end: if (Serial.available() > 0)
   
-  if (scanLoopCount == 100000)
+  if (scanLoopCount == 10000)// normally 100,000
   {
     scanLoopCount = 0;
     if (scanListStored == true)
@@ -287,6 +292,7 @@ void loop()
   //broadcastLoopCount++;
   
   processResponse(receiveFromMesh());
+  processControls();
   checkI2CCount++;
   if (checkI2CCount == 100000)
   {
@@ -309,7 +315,7 @@ void restart()
 void storeConfig()
 {
   scan = false;
-  Serial.println("Storing config***********");
+  //Serial.println("Storing config***********");
   //writeConfiguration();
   scanListStored = true;
   scan = true;
@@ -331,8 +337,8 @@ void requestEvent() {
   //String response = sensors.getSensorData(loraID) + ",Status=" + sensors.getDeviceMode(loraID) + ",";
   String sensorVersion = sensors.getSensorVersion(sensors.getSensorScanNumber(loraID));
   
-  Serial.print("Sensor Version:");
-  Serial.println(sensorVersion);
+  //Serial.print("Sensor Version:");
+  //Serial.println(sensorVersion);
   String responseBrief = "";
   if (sensorVersion == "2.0")
   {
@@ -346,6 +352,7 @@ void requestEvent() {
   {
     return;
   }
+  Serial.print("Retuning:");
   Serial.println(responseBrief);
   Wire.write(responseBrief.c_str());
 }

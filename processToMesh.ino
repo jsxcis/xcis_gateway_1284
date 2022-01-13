@@ -33,6 +33,11 @@ void processToMesh(String loraID, String deviceType)
     xcisMessage.createMessage(data,locationID, FENCE, SENSOR_DATA_REQUEST);
     xcisMessage.dumpHex(data,sizeof(data));
   }
+  else if (deviceType == "Bore")
+  {
+    xcisMessage.createMessage(data,locationID, BORE_CONTROLLER, SENSOR_DATA_REQUEST);
+    xcisMessage.dumpHex(data,sizeof(data));
+  }
   else
   {
     Serial.println("Unknown device type");

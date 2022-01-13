@@ -6,7 +6,7 @@ void processResponse(String sensorData)
         String loraID = sensorData.substring(3,5);
         int scanID = sensors.getSensorScanNumber(loraID);
         sensors.setSensorData(scanID, sensorData);
-        sensors.setDeviceMode(scanID,"ONLINE",millis());
+        sensors.setDeviceMode(scanID,"ON",millis());
         sensorData = "";
   } 
 }
