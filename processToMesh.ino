@@ -45,7 +45,8 @@ void processToMesh(String loraID, String deviceType)
   }
   // Send a message to a rf22_mesh_server
   // A route to the destination will be automatically discovered.
-  
+  //Serial.print("Message size:");
+  //Serial.println(sizeof(data));
   if (manager->sendtoWait(data, sizeof(data), destination) == RH_ROUTER_ERROR_NONE)
   {
     // Status update for successful send
@@ -56,6 +57,6 @@ void processToMesh(String loraID, String deviceType)
     // Status update for send error
     
   }
-  Serial.println("processToMesh():done");
+  //Serial.println("processToMesh():done");
   digitalWrite(LORA,0);
 }

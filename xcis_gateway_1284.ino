@@ -12,7 +12,7 @@
 
 const char compile_date[] = __DATE__ " " __TIME__;
 
-uint8_t nodeId = 0x95; // Gateway LoraID
+uint8_t nodeId = 0x94; // Gateway LoraID
 uint8_t locationID = 0x01; // Location ID of this gateway
 
 #pragma pack(push, 1)
@@ -247,7 +247,7 @@ void loop()
     }
   } // end: if (Serial.available() > 0)
   
-  if (scanLoopCount == 10000)// normally 100,000
+  if (scanLoopCount == 1000)// normally 100,000
   {
     scanLoopCount = 0;
     if (scanListStored == true)

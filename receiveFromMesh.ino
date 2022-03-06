@@ -19,13 +19,16 @@ String receiveFromMesh()
     String ver = sensors.getSensorVersion(sensors.getSensorScanNumber(String(from)));
     if (ver == "3.0")
     {
-        Serial.println("New protocol message:");
-        xcisMessage.processMessage(buf);
-        Serial.print(xcisMessage.getLocationID(),HEX);
-        Serial.print(":");
-        Serial.print(xcisMessage.getDeviceType(),HEX);
-        Serial.print(":");
-        Serial.println(xcisMessage.getCommand(),HEX);
+        //Serial.println("New protocol message:");
+        if(xcisMessage.processMessage(buf) == false)
+        {
+          return "NULL";
+        }
+        //Serial.print(xcisMessage.getLocationID(),HEX);
+        //Serial.print(":");
+        //Serial.print(xcisMessage.getDeviceType(),HEX);
+        //Serial.print(":");
+        //Serial.println(xcisMessage.getCommand(),HEX);
         switch(xcisMessage.getDeviceType())
         {
           case RAIN_GAUGE:
@@ -36,12 +39,12 @@ String receiveFromMesh()
             //xcisMessage.dumpHex(recvPayload,28);
             pulse_counter pcm;
             xcisMessage.processPulseCounterPayload(pcm);
-            Serial.println(pcm.battery); // Need to div by 100.
+            //Serial.println(pcm.battery); // Need to div by 100.
             float batVoltage = (float) pcm.battery/100.00;
-            Serial.println(pcm.value);
-            Serial.println(pcm.accumulatedDataToken);
+            //Serial.println(pcm.value);
+            //Serial.println(pcm.accumulatedDataToken);
             response = "ID=" +inbound_loraID +  ",V=" + String(pcm.value) + ",T=" + String(pcm.accumulatedDataToken) + ",B=" + String(batVoltage) + ",";
-            Serial.println(response);
+            //Serial.println(response);
             break;
           }
           case FLOW_METER:
@@ -52,13 +55,13 @@ String receiveFromMesh()
             //xcisMessage.dumpHex(recvPayload,28);
             pulse_counter pcm;
             xcisMessage.processPulseCounterPayload(pcm);
-            Serial.println(pcm.battery); // Need to div by 100.
+            //Serial.println(pcm.battery); // Need to div by 100.
             float batVoltage = (float) pcm.battery/100.00;
-            Serial.println(pcm.value);
-            Serial.println(pcm.accumulatedDataToken);
-            Serial.println(from);
+            //Serial.println(pcm.value);
+            //Serial.println(pcm.accumulatedDataToken);
+            //Serial.println(from);
             response = "ID=" + inbound_loraID +  ",V=" + String(pcm.value) + ",T=" + String(pcm.accumulatedDataToken)  + ",B=" + String(batVoltage) + ",";
-            Serial.println(response);
+            //Serial.println(response);
             break;
           }
           case TROUGH:
@@ -111,25 +114,25 @@ String receiveFromMesh()
           }
           case BORE_CONTROLLER:
           {
-            Serial.println("BORE_CONTROLLER");
+            //Serial.println("BORE_CONTROLLER");
             uint8_t recvPayload[28];
             xcisMessage.getPayload(recvPayload);
             xcisMessage.dumpHex(recvPayload,28);
             boreStatus status;
             xcisMessage.processBorePayload(status);
-            Serial.println(status.battery); // Need to div by 100.
+            //Serial.println(status.battery); // Need to div by 100.
             float batVoltage = (float) status.battery/100.00;
-            Serial.println(status.currentValue);
-            Serial.println(status.boreState);
-            Serial.println(status.accumulatedPulses);
-            Serial.println(status.accumulatedDataToken);
-            Serial.println(from);
+            //Serial.println(status.currentValue);
+            //Serial.println(status.boreState);
+            //Serial.println(status.accumulatedPulses);
+            //Serial.println(status.accumulatedDataToken);
+            //Serial.println(from);
             response = "ID=" + inbound_loraID + ",V=" + String(status.currentValue) + 
                         ",P=" + String(status.accumulatedPulses)+
                         ",T=" + String(status.accumulatedDataToken)+
                          ",S=" + String(status.boreState)  +
                          ",B=" + String(batVoltage)+ ",";
-            Serial.println(response);
+            //Serial.println(response);
             break;
           }
           default:

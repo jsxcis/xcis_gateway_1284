@@ -19,10 +19,10 @@ void processMessage()
 
   if (getdatafrom != "NULL")
   {
-    Serial.print("Got getdata request for:");
-    Serial.println(getdatafrom);
-    Serial.print("Device Type:");
-    Serial.println(device);
+    //Serial.print("Got getdata request for:");
+    //Serial.println(getdatafrom);
+    //Serial.print("Device Type:");
+    //Serial.println(device);
     loraID = getdatafrom;
     deviceType = device;
   }
@@ -33,10 +33,10 @@ void processMessage()
     deviceType = device;
     controlAction = controlVal;
     pulseDuration = pulseLen;
-    Serial.print(loraID + ",");
-    Serial.print(deviceType + ",");
-    Serial.print(pulseDuration + ",");
-    Serial.println(controlAction);
+    //Serial.print(loraID + ",");
+    //Serial.print(deviceType + ",");
+    //Serial.print(pulseDuration + ",");
+    //Serial.println(controlAction);
     // Set the flag to execute the outbound control next cycle
     controlOutboundFlag = true;
   }
