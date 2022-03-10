@@ -247,7 +247,7 @@ void loop()
     }
   } // end: if (Serial.available() > 0)
   
-  if (scanLoopCount == 1000)// normally 100,000
+  if (scanLoopCount == 50000)// normally 100,000
   {
     scanLoopCount = 0;
     if (scanListStored == true)
@@ -350,6 +350,8 @@ void requestEvent() {
   }
   else
   {
+    // In this case likely that the scan list is incorrect - so reload
+    scanListStored = false;
     return;
   }
   Serial.print("Retuning:");
